@@ -1,0 +1,370 @@
+<html>
+    <head>
+        <title>KanaFlop</title>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
+        <style type="text/css">
+            * {
+                font-family: 'Open Sans', 'Meiryo', sans-serif;
+                font-size: 0.9em;
+                padding: 0;
+                margin: 0;
+            }
+            
+            body {
+                text-align: center;
+                background-color: #EEEEEE;
+            }
+            
+            #header {
+                font-size: 2.4em;
+                font-weight: 400;
+                color: rgba(50, 50, 50, 1.0);
+                margin-top: 16px;
+                margin-bottom: 8px;
+            }
+            
+            #content {
+            
+            }
+            
+            #footer {
+                background-color: rgba(50, 50, 50, 1.0);
+                color: #DDDDDD;
+                position: absolute;
+                padding-top: 0.2em;
+                padding-bottom: 0.2em;
+                width: 100%;
+                font-size: 0.8em;
+                bottom: 0;
+            }
+            
+            #footer a {
+                color: #3388DD;
+                text-decoration: none;
+            }
+            
+            .fineprint {
+                font-size: 0.7em;
+                color: rgba(50, 50, 50, 1.0);
+            }
+            
+            textarea {
+                background-color: #F6F6F6;
+                border-color: #555555;
+                resize: none;
+                margin-bottom: 8px;
+            }
+            
+            textarea:disabled {
+                background-color: #BBBBBB;
+            }
+        </style>
+        <script type="text/javascript">
+            var HIRAGANA = "あいうえおかきくけこさしすせそたちつてとはひふへほなにぬねのまみむめもらりるれろやゆよわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょっぁぃぅぇぉ";
+            var KATAKANA = "アイウエオカキクケコサシスセソタチツテトハヒフヘホナニヌネノマミムメモラリルレロヤユヨワヲンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポャュョッァィゥェォ";
+            
+            var lastLength = 0;
+            
+            function elemid(id) {
+                return document.getElementById(id);
+            }
+            
+            function elemname(name) {
+                return document.getElementsByName(name);
+            }
+            
+            function elemclass(classname) {
+                return document.getElementsByClass(classname);
+            }
+            
+            function optval(name) {
+                var radios = document.getElementsByName(name);
+                
+                for (var i = 0, length = radios.length; i < length; i++)
+                    if (radios[i].checked)
+                        return radios[i].value;
+            }
+            
+            function optchange(smart) {
+                convert(smart);
+            }
+            
+            function convert(smart) {
+                var kfin = document.getElementById("kfin");
+                var kfout = document.getElementById("kfout");
+                var kfrc = optval("kfrc");
+                var iText = kfin.value.toLowerCase();
+                var oText = smart === true ? kfout.value : "";
+                
+                if (smart) {
+                    if (lastLength >= iText.length) return;
+                    
+                    if (iText.length < oText.length)
+                        oText = oText.substr(0, iText.length);
+
+                    if (iText.length > 0) {
+                        var chr = iText[iText.length - 1];
+                        var hidx = HIRAGANA.indexOf(chr);
+                        var kidx = KATAKANA.indexOf(chr);
+                        if (hidx > -1) chr = KATAKANA[hidx];
+                        if (kidx > -1) chr = HIRAGANA[kidx];
+                        oText += chr;
+                    } else oText = "";
+                } else {
+                    for (var i = 0; i < iText.length; i++) {
+                        var chr = iText[i];
+                        if (HIRAGANA.indexOf(chr) > -1) oText += KATAKANA[HIRAGANA.indexOf(chr)];
+                        else if (KATAKANA.indexOf(chr) > -1) oText += HIRAGANA[KATAKANA.indexOf(chr)];
+                        else oText += chr;
+                    }
+                }
+                
+                var CHARSET = (kfrc == 1 ? HIRAGANA : (kfrc == 2 ? KATAKANA : null));
+                if (CHARSET != null) {
+                    var result = oText;
+                    var CONSONANTS = "ktshnmrgzjdbpf";
+                    
+                    var posa  =  0, poska =  5,
+                        possa = 10, posta = 15, posha = 20,
+                        posna = 25, posma = 30, posra = 35,
+                        posya = 40, poswa = 43, posn  = 45,
+                        posga = 46, posza = 51, posda = 56,
+                        posba = 61, pospa = 66, posly = 71,
+                        poslt = 74, posla = 75;
+                    
+                    var smalltsu = CHARSET[poslt];
+                    var nstop = CHARSET[posn];
+                    
+                    result = result.replace(/n'/gi, nstop);
+                    
+                    for (var i = 0; i < CONSONANTS.length; i++) {
+                        var consonant = "" + CONSONANTS[i] + "";
+                        
+                        if (consonant == "t") {
+                            result = result.replace(new RegExp("([aiueo])t(t(a|i|u|su|e|o))", "gi"), "$1" + smalltsu + "$2");
+                            result = result.replace(new RegExp("([aiueo])c(ch(i|a|u|o))", "gi"), "$1" + smalltsu + "$2");
+                        }
+                        
+                        else if (consonant == "d")
+                            result = result.replace(new RegExp("([aiueo])d(d(u|i|zu|ya|yu|yo|ja|ju|jo|ji))", "gi"), "$1" + smalltsu + "$2");
+                        
+                        else if (consonant == "s")
+                            result = result.replace(new RegExp("([aiueo])s(s(ha|hu|ho|hi|a|i|u|e|o))", "gi"), "$1" + smalltsu + "$2");
+                        
+                        else result = result.replace(new RegExp("([aiueo])" + consonant + "(" + consonant + "(ya|yu|yo|a|i|u|e|o))", "gi"), "$1" + smalltsu + "$2");
+                    }
+                    
+                    var pos = 0;
+                    
+                    if (kfrc == 2) {
+                        result = result.replace(/aa/gi, "aー");
+                        result = result.replace(/ii/gi, "iー");
+                        result = result.replace(/uu/gi, "uー");
+                        result = result.replace(/ee/gi, "eー");
+                        result = result.replace(/oo/gi, "oー");
+                    }
+                    
+                    pos = poska + 1;
+                    result = result.replace(/kya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/kyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/kyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = possa + 1;
+                    result = result.replace(/sha/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/shu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/sho/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posta + 1;
+                    result = result.replace(/cha/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/chu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/cho/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posha + 1;
+                    result = result.replace(/hya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/hyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/hyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posna + 1;
+                    result = result.replace(/nya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/nyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/nyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posma + 1;
+                    result = result.replace(/mya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/myu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/myo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posra + 1;
+                    result = result.replace(/rya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/ryu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/ryo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posga + 1;
+                    result = result.replace(/gya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/gyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/gyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posda + 1;
+                    result = result.replace(/dya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/dja/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/dyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/dju/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/dyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    result = result.replace(/djo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posza + 1;
+                    result = result.replace(/ja/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/jya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/ju/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/jyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/jo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    result = result.replace(/jyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = posba + 1;
+                    result = result.replace(/bya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/byu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/byo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = pospa + 1;
+                    result = result.replace(/pya/gi, CHARSET[pos] + "" + CHARSET[posly + 0]);
+                    result = result.replace(/pyu/gi, CHARSET[pos] + "" + CHARSET[posly + 1]);
+                    result = result.replace(/pyo/gi, CHARSET[pos] + "" + CHARSET[posly + 2]);
+                    
+                    pos = poska;
+                    result = result.replace(/ka/gi, CHARSET[pos + 0]);
+                    result = result.replace(/ki/gi, CHARSET[pos + 1]);
+                    result = result.replace(/ku/gi, CHARSET[pos + 2]);
+                    result = result.replace(/ke/gi, CHARSET[pos + 3]);
+                    result = result.replace(/ko/gi, CHARSET[pos + 4]);
+                    
+                    pos = posta;
+                    result = result.replace(/ta/gi, CHARSET[pos + 0]);
+                    result = result.replace(/chi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/ti/gi, CHARSET[pos + 1]);
+                    result = result.replace(/tsu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/tu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/te/gi, CHARSET[pos + 3]);
+                    result = result.replace(/to/gi, CHARSET[pos + 4]);
+                    
+                    pos = possa;
+                    result = result.replace(/sa/gi, CHARSET[pos + 0]);
+                    result = result.replace(/shi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/si/gi, CHARSET[pos + 1]);
+                    result = result.replace(/su/gi, CHARSET[pos + 2]);
+                    result = result.replace(/se/gi, CHARSET[pos + 3]);
+                    result = result.replace(/so/gi, CHARSET[pos + 4]);
+                    
+                    pos = posha;
+                    result = result.replace(/ha/gi, CHARSET[pos + 0]);
+                    result = result.replace(/hi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/fu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/hu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/he/gi, CHARSET[pos + 3]);
+                    result = result.replace(/ho/gi, CHARSET[pos + 4]);
+                    
+                    pos = posna;
+                    result = result.replace(/na/gi, CHARSET[pos + 0]);
+                    result = result.replace(/ni/gi, CHARSET[pos + 1]);
+                    result = result.replace(/nu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/ne/gi, CHARSET[pos + 3]);
+                    result = result.replace(/no/gi, CHARSET[pos + 4]);
+                    
+                    pos = posma;
+                    result = result.replace(/ma/gi, CHARSET[pos + 0]);
+                    result = result.replace(/mi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/mu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/me/gi, CHARSET[pos + 3]);
+                    result = result.replace(/mo/gi, CHARSET[pos + 4]);
+                    
+                    pos = posra;
+                    result = result.replace(/ra/gi, CHARSET[pos + 0]);
+                    result = result.replace(/ri/gi, CHARSET[pos + 1]);
+                    result = result.replace(/ru/gi, CHARSET[pos + 2]);
+                    result = result.replace(/re/gi, CHARSET[pos + 3]);
+                    result = result.replace(/ro/gi, CHARSET[pos + 4]);
+                    
+                    pos = posga;
+                    result = result.replace(/ga/gi, CHARSET[pos + 0]);
+                    result = result.replace(/gi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/gu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/ge/gi, CHARSET[pos + 3]);
+                    result = result.replace(/go/gi, CHARSET[pos + 4]);
+                    
+                    pos = posda;
+                    result = result.replace(/da/gi, CHARSET[pos + 0]);
+                    result = result.replace(/dji/gi, CHARSET[pos + 1]);
+                    result = result.replace(/di/gi, CHARSET[pos + 1]);
+                    result = result.replace(/dzu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/du/gi, CHARSET[pos + 2]);
+                    result = result.replace(/de/gi, CHARSET[pos + 3]);
+                    result = result.replace(/do/gi, CHARSET[pos + 4]);
+                    
+                    pos = posza;
+                    result = result.replace(/za/gi, CHARSET[pos + 0]);
+                    result = result.replace(/zi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/ji/gi, CHARSET[pos + 1]);
+                    result = result.replace(/zu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/ze/gi, CHARSET[pos + 3]);
+                    result = result.replace(/zo/gi, CHARSET[pos + 4]);
+                    
+                    pos = posba;
+                    result = result.replace(/ba/gi, CHARSET[pos + 0]);
+                    result = result.replace(/bi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/bu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/be/gi, CHARSET[pos + 3]);
+                    result = result.replace(/bo/gi, CHARSET[pos + 4]);
+                    
+                    pos = pospa;
+                    result = result.replace(/pa/gi, CHARSET[pos + 0]);
+                    result = result.replace(/pi/gi, CHARSET[pos + 1]);
+                    result = result.replace(/pu/gi, CHARSET[pos + 2]);
+                    result = result.replace(/pe/gi, CHARSET[pos + 3]);
+                    result = result.replace(/po/gi, CHARSET[pos + 4]);
+                    
+                    result = result.replace(/ya/gi, CHARSET[posya + 0]);
+                    result = result.replace(/yu/gi, CHARSET[posya + 1]);
+                    result = result.replace(/yo/gi, CHARSET[posya + 2]);
+                    
+                    result = result.replace(/fa/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 0]);
+                    result = result.replace(/fi/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 1]);
+                    /*result = result.replace(/u/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 2]);*/
+                    result = result.replace(/fe/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 3]);
+                    result = result.replace(/fo/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 4]);
+                    
+                    result = result.replace(/a/gi, CHARSET[posa + 0]);
+                    result = result.replace(/i/gi, CHARSET[posa + 1]);
+                    result = result.replace(/u/gi, CHARSET[posa + 2]);
+                    result = result.replace(/e/gi, CHARSET[posa + 3]);
+                    result = result.replace(/o/gi, CHARSET[posa + 4]);
+                    
+                    oText = result;
+                }
+                
+                kfout.value = oText;
+                kfout.scrollTop = kfout.scrollHeight;
+                lastLength = iText.length;
+            }
+        </script>
+    </head>
+    <body onkeyup="convert()">
+        <div id="header">
+            カナFlop
+        </div>
+        <div id="content">
+            <div class="fineprint">
+                Output not updating? Click the input box or press a key.
+            </div>
+            <textarea id="kfin" type="text" onclick="convert()" onkeyup="convert()" rows="12" cols="80"></textarea><br />
+            <textarea id="kfout" type="text" disabled rows="12" cols="80"></textarea><br />
+            <form onchange="optchange()">
+                <input name="kfrc" type="radio" value="0" />Ignore Rōmaji<br />
+                <input name="kfrc" type="radio" value="1" checked />Convert to Hiragana<br />
+                <input name="kfrc" type="radio" value="2" />Convert to Katakana<br />
+            </form>
+        </div>
+        <div id="footer">
+            &copy; 2014 <a href="http://github.com/pandacoder">Robbie L. (a.k.a. PandaCoder)</a><br />
+            <a href="http://pandacoder.net/utils/kanaflop.html">Live Page</a> | <a href="http://github.com/pandacoder/kanaflop">GitHub Repository</a>
+        </div>
+    </body>
+</html>
