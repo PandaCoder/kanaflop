@@ -152,7 +152,7 @@
                 var kfin = document.getElementById("kfin");
                 var kfout = document.getElementById("kfout");
                 var kfrc = optval("kfrc");
-                var iText = kfin.value.toLowerCase();
+                var iText = kfin.value;
                 var oText = smart === true ? kfout.value : "";
                 
                 if (smart) {
@@ -215,12 +215,20 @@
                     
                     var pos = 0;
                     
+                    result = result.replace(/[Āā]/gi, "aa");
+                    result = result.replace(/[Īī]/gi, "ii");
+                    result = result.replace(/[Ūū]/gi, "uu");
+                    result = result.replace(/[Ēē]/gi, "ee");
+                    result = result.replace(/[Ōō]/gi, "oo");
+                    
                     if (kfrc == 2) {
                         result = result.replace(/aa/gi, "aー");
                         result = result.replace(/ii/gi, "iー");
                         result = result.replace(/uu/gi, "uー");
                         result = result.replace(/ee/gi, "eー");
                         result = result.replace(/oo/gi, "oー");
+                        result = result.replace(/ei/g, "eー");
+                        result = result.replace(/ou/g, "oー");
                     }
                     
                     pos = poska + 1;
