@@ -24,13 +24,13 @@
             }
             
             #content {
-            
+                
             }
             
             #footer {
                 background-color: rgba(50, 50, 50, 1.0);
                 color: #DDDDDD;
-                position: absolute;
+                position: fixed;
                 padding-top: 0.2em;
                 padding-bottom: 0.2em;
                 width: 100%;
@@ -48,6 +48,12 @@
                 color: rgba(50, 50, 50, 1.0);
             }
             
+            .subheader {
+                font-size: 0.3em;
+                font-style: italic;
+                color: rgba(50, 50, 50, 1.0);
+            }
+            
             textarea {
                 background-color: #F6F6F6;
                 border-color: #555555;
@@ -58,7 +64,43 @@
             textarea:disabled {
                 background-color: #BBBBBB;
             }
+            
+            #optrom {
+                font-size: 0.9em;
+            }
+            
+            .opthead {
+                text-decoration: underline;
+                font-size: 1.25em;
+                height: 1.1em;
+            }
+            
+            input[type="radio"] {
+                vertical-align: middle;
+                margin-right: 0.2em;
+            }
         </style>
+    </head>
+    <body onkeyup="convert()">
+        <div id="header">
+            カナFlop
+            <div class="subheader">Switches Hiragana and Katakana and optionally converts rōmaji.</div>
+        </div>
+        <div id="content">
+            <div class="fineprint">Output not updating? Click the input box or press a key.</div>
+            <textarea id="kfin" type="text" onclick="convert()" onkeyup="convert()" rows="12" cols="80"></textarea><br />
+            <textarea id="kfout" type="text" disabled rows="12" cols="80"></textarea><br />
+            <form id="optrom" onchange="optchange()">
+                <span><label class="opthead"><strong>Rōmaji Handling</strong></label></span><br />
+                <span><input name="kfrc" type="radio" value="0" /><label>Ignore Rōmaji</label></span><br />
+                <span><input name="kfrc" type="radio" value="1" /><label>Convert to Hiragana</label></span><br />
+                <span><input name="kfrc" type="radio" value="2" checked /><label>Convert to Katakana</label></span><br />
+            </form>
+        </div>
+        <div id="footer">
+            &copy; 2014 <a href="http://github.com/pandacoder">Robbie L. (a.k.a. PandaCoder)</a><br />
+            <a href="http://pandacoder.net/utils/kanaflop.html">Live Page</a> | <a href="http://github.com/pandacoder/kanaflop">GitHub Repository</a>
+        </div>
         <script type="text/javascript">
             var HIRAGANA = "あいうえおかきくけこさしすせそたちつてとはひふへほなにぬねのまみむめもらりるれろやゆよわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょっぁぃぅぇぉ";
             var KATAKANA = "アイウエオカキクケコサシスセソタチツテトハヒフヘホナニヌネノマミムメモラリルレロヤユヨワヲンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポャュョッァィゥェォ";
@@ -345,26 +387,5 @@
                 lastLength = iText.length;
             }
         </script>
-    </head>
-    <body onkeyup="convert()">
-        <div id="header">
-            カナFlop
-        </div>
-        <div id="content">
-            <div class="fineprint">
-                Output not updating? Click the input box or press a key.
-            </div>
-            <textarea id="kfin" type="text" onclick="convert()" onkeyup="convert()" rows="12" cols="80"></textarea><br />
-            <textarea id="kfout" type="text" disabled rows="12" cols="80"></textarea><br />
-            <form onchange="optchange()">
-                <input name="kfrc" type="radio" value="0" />Ignore Rōmaji<br />
-                <input name="kfrc" type="radio" value="1" checked />Convert to Hiragana<br />
-                <input name="kfrc" type="radio" value="2" />Convert to Katakana<br />
-            </form>
-        </div>
-        <div id="footer">
-            &copy; 2014 <a href="http://github.com/pandacoder">Robbie L. (a.k.a. PandaCoder)</a><br />
-            <a href="http://pandacoder.net/utils/kanaflop.html">Live Page</a> | <a href="http://github.com/pandacoder/kanaflop">GitHub Repository</a>
-        </div>
     </body>
 </html>
