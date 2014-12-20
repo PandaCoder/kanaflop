@@ -15,98 +15,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
-        <title>カナFlop by PandaCoder</title>
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
-        <style type="text/css">
-            * {
-                font-family: 'Open Sans', 'Meiryo', sans-serif;
-                font-size: 0.9em;
-                padding: 0;
-                margin: 0;
-            }
-            
-            body {
-                text-align: center;
-                background-color: #EEEEEE;
-            }
-            
-            #header {
-                font-size: 2.4em;
-                font-weight: 400;
-                color: rgba(50, 50, 50, 1.0);
-                margin-top: 16px;
-                margin-bottom: 8px;
-            }
-            
-            #content {
-                
-            }
-            
-            #footer {
-                background-color: rgba(50, 50, 50, 1.0);
-                color: #DDDDDD;
-                position: fixed;
-                padding-top: 0.2em;
-                padding-bottom: 0.2em;
-                width: 100%;
-                font-size: 0.8em;
-                bottom: 0;
-            }
-            
-            #footer a {
-                color: #3388DD;
-                text-decoration: none;
-            }
-            
-            .fineprint {
-                font-size: 0.7em;
-                color: rgba(50, 50, 50, 1.0);
-            }
-            
-            .subheader {
-                font-size: 0.3em;
-                font-style: italic;
-                color: rgba(50, 50, 50, 1.0);
-            }
-            
-            textarea {
-                background-color: #F6F6F6;
-                border-color: #555555;
-                resize: none;
-                margin-bottom: 8px;
-            }
-            
-            textarea:disabled {
-                background-color: #BBBBBB;
-            }
-            
-            #optrom {
-                font-size: 0.9em;
-            }
-            
-            .opthead {
-                text-decoration: underline;
-                font-size: 1.25em;
-                height: 1.1em;
-            }
-            
-            input[type="radio"] {
-                vertical-align: middle;
-                margin-right: 0.2em;
-            }
-        </style>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=8.0; minimum-scale=0.5; user-scalable=0;"/>
+        
+        <title>かなフロップ by PandaCoder</title>
+        <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' />
+        <link rel='stylesheet' type='text/css' href='desktop.css' media='(orientation: landscape)' />
+        <link rel='stylesheet' type='text/css' href='mobile.css' media='(orientation: portrait)' />
     </head>
     <body onkeyup="convert()">
         <div id="header">
-            カナFlop
+            かなフロップ
             <div class="subheader">Switches Hiragana and Katakana and optionally converts rōmaji.</div>
         </div>
         <div id="content">
             <div class="fineprint">Output not updating? Click the input box or press a key.</div>
-            <textarea id="kfin" type="text" onclick="convert()" onkeyup="convert()" rows="12" cols="80"></textarea><br />
-            <textarea id="kfout" type="text" disabled rows="12" cols="80"></textarea><br />
+            <textarea id="kfin" type="text" onclick="convert()" onkeyup="convert()"></textarea><br />
+            <textarea id="kfout" type="text" disabled></textarea><br />
             <form id="optrom" onchange="optchange()">
                 <span><label class="opthead"><strong>Rōmaji Handling</strong></label></span><br />
                 <span><input name="kfrc" type="radio" value="0" /><label>Ignore Rōmaji</label></span><br />
@@ -181,7 +109,7 @@
                 var CHARSET = (kfrc == 1 ? HIRAGANA : (kfrc == 2 ? KATAKANA : null));
                 if (CHARSET != null) {
                     var result = oText;
-                    var CONSONANTS = "ktshnmrgzjdbpf";
+                    var CONSONANTS = "ktshnmrgzjdbpfw";
                     
                     var posa  =  0, poska =  5,
                         possa = 10, posta = 15, posha = 20,
@@ -209,6 +137,9 @@
                         
                         else if (consonant == "s")
                             result = result.replace(new RegExp("([aiueo])s(s(ha|hu|ho|hi|a|i|u|e|o))", "gi"), "$1" + smalltsu + "$2");
+                        
+                        else if (consonant == "n")
+                            result = result.replace(new RegExp("([aiueo])" + consonant + "(" + consonant + "(ya|yu|yo|a|i|u|e|o))", "gi"), "$1" + nstop + "$2");
                         
                         else result = result.replace(new RegExp("([aiueo])" + consonant + "(" + consonant + "(ya|yu|yo|a|i|u|e|o))", "gi"), "$1" + smalltsu + "$2");
                     }
@@ -392,6 +323,9 @@
                     result = result.replace(/yu/gi, CHARSET[posya + 1]);
                     result = result.replace(/yo/gi, CHARSET[posya + 2]);
                     
+                    result = result.replace(/wa/gi, CHARSET[poswa + 0]);
+                    result = result.replace(/wo/gi, CHARSET[poswa + 1]);
+                    
                     result = result.replace(/fa/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 0]);
                     result = result.replace(/fi/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 1]);
                     /*result = result.replace(/u/gi, CHARSET[posha + 2] + "" + CHARSET[posla + 2]);*/
@@ -403,6 +337,7 @@
                     result = result.replace(/u/gi, CHARSET[posa + 2]);
                     result = result.replace(/e/gi, CHARSET[posa + 3]);
                     result = result.replace(/o/gi, CHARSET[posa + 4]);
+                    result = result.replace(/n/gi, CHARSET[posn + 0]);
                     
                     oText = result;
                 }
