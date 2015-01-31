@@ -5,9 +5,11 @@
     margin: 0;
 }
 
+
 body {
     text-align: center;
     background-color: #EEEEEE;
+    height: calc(width / aspect-ratio);
 }
 
 #header {
